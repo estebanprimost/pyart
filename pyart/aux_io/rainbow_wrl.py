@@ -181,12 +181,14 @@ def read_rainbow_wrl(filename, field_names=None, additional_metadata=None,
     # other metadata
     scan_rate = filemetadata('scan_rate')
     frequency = filemetadata('frequency')
+    wavelength = filemetadata('wavelength')
+    beamwidth = filemetadata('beamwidth')
 
     # get general file information
     radar_id = ''
     radar_name = ''
 
-    # id, name, position and radar frequency
+    # id, name, position, wavelength, beamwidth and radar frequency
     if 'sensorinfo' in rbf['volume'].keys():
         latitude['data'] = np.array(
             [rbf['volume']['sensorinfo']['lat']], dtype='float64')
@@ -197,6 +199,10 @@ def read_rainbow_wrl(filename, field_names=None, additional_metadata=None,
         frequency['data'] = np.array(
             [3e8 / float(rbf['volume']['sensorinfo']['wavelen'])],
             dtype='float64')
+        wavelength['data'] = np.array(
+            [rbf['volume']['sensorinfo']['wavelen']], dtype='float64')
+        beamwidth['data'] = np.array(
+            [rbf['volume']['sensorinfo']['beamwidth']], dtype='float64')
 
         radar_id = rbf['volume']['sensorinfo']['@id']
         radar_name = rbf['volume']['sensorinfo']['@name']
@@ -211,6 +217,10 @@ def read_rainbow_wrl(filename, field_names=None, additional_metadata=None,
         frequency['data'] = np.array(
             [3e8 / float(rbf['volume']['radarinfo']['wavelen'])],
             dtype='float64')
+        wavelength['data'] = np.array(
+            [rbf['volume']['radarinfo']['wavelen']], dtype='float64')
+        beamwidth['data'] = np.array(
+            [rbf['volume']['radarinfo']['beamwidth']], dtype='float64')
 
         radar_id = rbf['volume']['radarinfo']['@id']
         radar_name = rbf['volume']['radarinfo']['name']
@@ -349,7 +359,11 @@ def read_rainbow_wrl(filename, field_names=None, additional_metadata=None,
 
     # instrument_parameters
     instrument_parameters = dict()
-    instrument_parameters.update({'frequency': frequency})
+    instrument_parameters.update({
+        'frequency': frequency,
+        'wavelength': wavelength,
+        'beamwidth': beamwidth
+    })
 
     return Radar(_time, _range, fields, metadata, scan_type, latitude,
                  longitude, altitude, sweep_number, sweep_mode, fixed_angle,
