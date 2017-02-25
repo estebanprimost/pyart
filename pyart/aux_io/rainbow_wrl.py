@@ -183,8 +183,10 @@ def read_rainbow_wrl(filename, field_names=None, additional_metadata=None,
     frequency = filemetadata('frequency')
 
     # get general file information
+    radar_id = ''
+    radar_name = ''
 
-    # position and radar frequency
+    # id, name, position and radar frequency
     if 'sensorinfo' in rbf['volume'].keys():
         latitude['data'] = np.array(
             [rbf['volume']['sensorinfo']['lat']], dtype='float64')
@@ -195,6 +197,10 @@ def read_rainbow_wrl(filename, field_names=None, additional_metadata=None,
         frequency['data'] = np.array(
             [3e8 / float(rbf['volume']['sensorinfo']['wavelen'])],
             dtype='float64')
+
+        radar_id = rbf['volume']['sensorinfo']['@id']
+        radar_name = rbf['volume']['sensorinfo']['@name']
+
     elif 'radarinfo' in rbf['volume'].keys():
         latitude['data'] = np.array(
             [rbf['volume']['radarinfo']['@lat']], dtype='float64')
@@ -205,6 +211,9 @@ def read_rainbow_wrl(filename, field_names=None, additional_metadata=None,
         frequency['data'] = np.array(
             [3e8 / float(rbf['volume']['radarinfo']['wavelen'])],
             dtype='float64')
+
+        radar_id = rbf['volume']['radarinfo']['@id']
+        radar_name = rbf['volume']['radarinfo']['name']
 
     # antenna speed
     if 'antspeed' in common_slice_info:
@@ -335,7 +344,8 @@ def read_rainbow_wrl(filename, field_names=None, additional_metadata=None,
     fields[field_name] = field_dic
 
     # metadata
-    # metadata['instrument_name'] = radar_id
+    metadata['id'] = radar_id
+    metadata['name'] = radar_name
 
     # instrument_parameters
     instrument_parameters = dict()
